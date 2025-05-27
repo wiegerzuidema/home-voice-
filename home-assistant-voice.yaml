@@ -1112,7 +1112,7 @@ script:
   - id: control_leds_voice_assistant_error_phase
     then:
       - light.turn_on:
-          brightness: !lambda return min ( max( id(led_ring).current_values.get_brightness() , 0.2f ) + 0.1f , 1.0f );
+          brightness: !lambda return min ( max( id(led_ring).current_values.get_brightness() , 2.0f ) + 0.1f , 1.0f );
           red: 1
           green: 0
           blue: 0

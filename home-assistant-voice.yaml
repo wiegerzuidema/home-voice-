@@ -659,10 +659,10 @@ light:
           update_interval: 16ms
           lambda: |-
             static int8_t index = 0;
-            Color muted_color(255, 255, 0);
+            Color muted_color(255, 255, 255);
             auto light_color = id(led_ring).current_values;
-            Color color(light_color.get_red() * 100, light_color.get_green() * 100,
-                  light_color.get_blue() * 100);
+            Color color(light_color.get_red() * 255, light_color.get_green() * 255,
+                  light_color.get_blue() * 255);
             for (int i = 0; i < 12; i++) {
               if ( light_color.get_state() ) {
                 it[i] = color;

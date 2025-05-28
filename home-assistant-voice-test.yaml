@@ -654,14 +654,12 @@ light:
                 it[i] = Color::BLACK;
               }
             }
-#################################################################   AANGEPAST   ##################################################            
-
       - addressable_lambda:
           name: "Muted or Silent"
           update_interval: 16ms
           lambda: |-
             static int8_t index = 0;
-            Color muted_color(0, 0, 0);
+            Color muted_color(255, 0, 0);
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255,
                   light_color.get_blue() * 255);
@@ -685,8 +683,6 @@ light:
               it[6] = muted_color;
               it[7] = Color::BLACK;
             }
-#################################################################   AANGEPAST   ##################################################
-
       - addressable_lambda:
           name: "Volume Display"
           update_interval: 50ms

@@ -659,7 +659,9 @@ light:
           update_interval: 16ms
           lambda: |-
             static int8_t index = 0;
-            Color muted_color(255, 255, 0);
+#################################################################   AANGEPAST   ##################################################            
+            Color muted_color(0, 0, 0);
+#################################################################   AANGEPAST   ##################################################
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255,
                   light_color.get_blue() * 255);
@@ -1691,11 +1693,13 @@ voice_assistant:
     - script.execute: control_leds
     # Start a script that would potentially enable the stop word if the response is longer than a second
     - script.execute: activate_stop_word_once
+#################################################################   AANGEPAST   ##################################################
     - homeassistant.service:
         service: tts.cloud_say
         data:
           entity_id: media_player.vlc_telnet   #replace this with your media player entity id
           message: !lambda 'return x;'
+#################################################################   AANGEPAST   ##################################################
   # When the voice assistant ends ...
   on_end:
     - wait_until:

@@ -21,7 +21,7 @@ esphome:
   name: home-assistant-voice
   friendly_name: Home Assistant Voice
   name_add_mac_suffix: true
-  min_version: 2025.5.0
+  min_version: 2025.5.1
   on_boot:
     priority: 375
     then:
@@ -654,7 +654,35 @@ light:
                 it[i] = Color::BLACK;
               }
             }
-
+      - addressable_lambda:
+          name: "Muted or Silent"
+          update_interval: 16ms
+          lambda: |-
+            static int8_t index = 0;
+            Color muted_color(255, 0, 0);
+            auto light_color = id(led_ring).current_values;
+            Color color(light_color.get_red() * 255, light_color.get_green() * 255,
+                  light_color.get_blue() * 255);
+            for (int i = 0; i < 12; i++) {
+              if ( light_color.get_state() ) {
+                it[i] = color;
+              } else {
+                it[i] = Color::BLACK;
+              }
+            }
+            if ( id(master_mute_switch).state ) {
+              it[2] = Color::BLACK;
+              it[3] = muted_color;
+              it[4] = Color::BLACK;
+              it[8] = Color::BLACK;
+              it[9] = muted_color;
+              it[10] = Color::BLACK;
+            }
+            if ( id(external_media_player).volume == 0.0f || id(external_media_player).is_muted() ) {
+              it[5] = Color::BLACK;
+              it[6] = muted_color;
+              it[7] = Color::BLACK;
+            }
       - addressable_lambda:
           name: "Volume Display"
           update_interval: 50ms
@@ -733,7 +761,7 @@ light:
             auto light_color = id(led_ring).current_values;
             Color color(light_color.get_red() * 255, light_color.get_green() * 255,
                   light_color.get_blue() * 255);
-            Color muted_color(255, 255, 0);
+            Color muted_color(255, 0, 0);
             for (int i = 0; i < 12; i++) {
               it[i] = color * uint8_t(255/brightness_step_number*(brightness_step_number-brightness_step));
             }

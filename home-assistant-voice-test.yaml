@@ -1597,13 +1597,18 @@ micro_wake_word:
                                       id: play_sound
                                       priority: true
                                       sound_file: !lambda return id(wake_word_triggered_sound);
-############################################                      
+#################################################################   AANGEPAST   ##################################################
+                      
                                   - homeassistant.service:
                                         service: media_player.play_media
                                         data:
+                                          media_content_id: /local/sound/doorbell.mp3
+                                          media_content_type: music
+                                          announce: true
                                           entity_id: media_player.vlc_telnet
                                           
-#############################################
+#################################################################   AANGEPAST   ##################################################
+
                                   - delay: 300ms
                             - voice_assistant.start:
                                 wake_word: !lambda return wake_word;

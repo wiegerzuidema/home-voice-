@@ -1600,6 +1600,17 @@ micro_wake_word:
                                   - delay: 300ms
                             - voice_assistant.start:
                                 wake_word: !lambda return wake_word;
+#################################################################   AANGEPAST   ##################################################
+                            - homeassistant.service:
+                              service: tts.cloud_say
+                              data:
+                                  media_content_id: /local/sound/doorbell.mp3
+                                  media_content_type: music
+                                  announce: true
+                                  entity_id: media_player.vlc_telnet   #replace this with your media player entity id
+                   
+#################################################################   AANGEPAST   ##################################################
+
 
 select:
   - platform: template

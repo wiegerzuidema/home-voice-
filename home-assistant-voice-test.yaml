@@ -1602,7 +1602,7 @@ micro_wake_word:
                                 wake_word: !lambda return wake_word;
 #################################################################   AANGEPAST   ##################################################
                             - homeassistant.service:
-                              service: tts.cloud_say
+                                action: media_player.play_media
                               data:
                                   media_content_id: /local/sound/doorbell.mp3
                                   media_content_type: music

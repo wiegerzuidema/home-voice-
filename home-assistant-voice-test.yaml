@@ -1598,7 +1598,7 @@ micro_wake_word:
                                     target:
                                       entity_id: media_player.vlc_telnet
                                   data:
-                                      media_content_id: /local/sound/doorbell.mp3
+                                      media_content_id: '/local/sound/doorbell.mp3'
                                       media_content_type: music                                    
 
 

@@ -1597,6 +1597,13 @@ micro_wake_word:
                                       id: play_sound
                                       priority: true
                                       sound_file: !lambda return id(wake_word_triggered_sound);
+############################################                      
+                                  - homeassistant.service:
+                                        service: media_player.play_media
+                                        data:
+                                          entity_id: media_player.vlc_telnet
+                                          
+#############################################
                                   - delay: 300ms
                             - voice_assistant.start:
                                 wake_word: !lambda return wake_word;

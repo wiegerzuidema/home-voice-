@@ -1595,11 +1595,11 @@ micro_wake_word:
                                 then:
                                   - homeassistant.service:
                                     action: media_player.play_media
-                                    data:
+                                    target:
+                                      entity_id: media_player.vlc_telnet
+                                  data:
                                       media_content_id: /local/sound/doorbell.mp3
-                                      media_content_type: music
-                                      announce: true
-                                  entity_id: media_player.vlc_telnet   #replace this with your media player entity id                                      
+                                      media_content_type: music                                    
 
 
 #################################################################   AANGEPAST   ##################################################

@@ -1593,10 +1593,14 @@ micro_wake_word:
                                 condition:
                                   switch.is_on: wake_sound
                                 then:
-                                  - script.execute:
-                                      id: play_sound
-                                      priority: true
-                                      sound_file: !lambda return id(wake_word_triggered_sound);
+                                  - homeassistant.service:
+                                    action: media_player.play_media
+                                    data:
+                                      media_content_id: /local/sound/doorbell.mp3
+                                      media_content_type: music
+                                      announce: true
+                                  entity_id: media_player.vlc_telnet   #replace this with your media player entity id                                      
+
 
 #################################################################   AANGEPAST   ##################################################
 

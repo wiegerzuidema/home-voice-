@@ -1603,12 +1603,12 @@ micro_wake_word:
 #################################################################   AANGEPAST   ##################################################
                       
                             - homeassistant.service:
-                                  service: media_player.play_media
-                                  data:
-                                    media_content_id: /local/sound/doorbell.mp3
-                                    media_content_type: music
-                                     announce: true
-                                     entity_id: media_player.vlc_telnet
+                                service: media_player.play_media
+                                data:
+                                  media_content_id: /local/sound/doorbell.mp3
+                                  media_content_type: music
+                                  announce: true
+                                  entity_id: media_player.vlc_telnet
                                           
 #################################################################   AANGEPAST   ##################################################
 

@@ -1594,12 +1594,12 @@ micro_wake_word:
                                   switch.is_on: wake_sound
                                 then:
                                   - homeassistant.service:
-                                    action: media_player.play_media
-                                    target:
-                                      entity_id: media_player.vlc_telnet
-                                  data:
-                                      media_content_id: '/local/sound/doorbell.mp3'
-                                      media_content_type: music                                    
+                                      service: media_player.play_media
+                                      target:
+                                        entity_id: media_player.vlc_telnet
+                                      data:
+                                        media_content_id: '/local/sound/doorbell.mp3'
+                                        media_content_type: music                                    
 
 
 #################################################################   AANGEPAST   ##################################################

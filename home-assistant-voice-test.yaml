@@ -1601,8 +1601,6 @@ micro_wake_word:
                             - voice_assistant.start:
                                 wake_word: !lambda return wake_word;
 
-                                          
-
 select:
   - platform: template
     name: "Wake word sensitivity"

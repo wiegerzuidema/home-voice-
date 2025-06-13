@@ -1700,8 +1700,11 @@ voice_assistant:
     # Start a script that would potentially enable the stop word if the response is longer than a second
     - script.execute: activate_stop_word_once
 #################################################################   AANGEPAST   ##################################################
-    - homeassistant.service:
-        service: tts.cloud_say
+
+   - homeassistant.service:
+        service: tts.speak
+        target:
+          entity_id: tts.openai_gpt_4o_mini_tts
         data:
           entity_id: media_player.vlc_telnet   #replace this with your media player entity id
           message: !lambda 'return x;'

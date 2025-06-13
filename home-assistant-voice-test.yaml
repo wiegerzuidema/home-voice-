@@ -1593,13 +1593,10 @@ micro_wake_word:
                                 condition:
                                   switch.is_on: wake_sound
                                 then:
-                                  - homeassistant.service:
-                                      service: media_player.play_media
-                                        entity_id: media_player.vlc_telnet
-                                      data:
-                                        media_content_id: '/local/sound/doorbell.mp3'
-                                        media_content_type: music                                    
-
+                                  - script.execute:
+                                      id: play_sound
+                                      priority: true
+                                      sound_file: !lambda return id(wake_word_triggered_sound);
 
 #################################################################   AANGEPAST   ##################################################
 
@@ -1700,7 +1697,6 @@ voice_assistant:
     # Start a script that would potentially enable the stop word if the response is longer than a second
     - script.execute: activate_stop_word_once
 #################################################################   AANGEPAST   ##################################################
-
    - homeassistant.service:
         service: tts.speak
         target:
@@ -1708,6 +1704,7 @@ voice_assistant:
         data:
           entity_id: media_player.vlc_telnet   #replace this with your media player entity id
           message: !lambda 'return x;'
+
 #################################################################   AANGEPAST   ##################################################
   # When the voice assistant ends ...
   on_end:

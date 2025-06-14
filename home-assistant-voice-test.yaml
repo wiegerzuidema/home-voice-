@@ -1450,7 +1450,7 @@ i2s_audio:
 external_components:
   - source:
       type: git
-      url: http://github.com/wiegerzuidema/home-voice-
+      url: https://github.com/esphome/home-assistant-voice-pe
       ref: dev
     components:
       - microphone

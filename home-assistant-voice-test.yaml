@@ -1450,7 +1450,7 @@ i2s_audio:
 external_components:
   - source:
       type: git
-      url: s://github.com/wiegerzuidema/home-voice-
+      url: http://github.com/wiegerzuidema/home-voice-
       ref: dev
     components:
       - microphone

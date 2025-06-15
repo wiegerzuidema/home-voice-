@@ -9,13 +9,10 @@
 namespace esphome {
 namespace voice_kit {
 
-static const uint8_t REGISTER_CHANNEL_1_STAGE = 0x40;
-
 // Configuration servicer resource IDs
 //
 static const uint8_t DFU_CONTROLLER_SERVICER_RESID = 240;
 static const uint8_t CONFIGURATION_SERVICER_RESID = 241;
-static const uint8_t CONFIGURATION_COMMAND_READ_BIT = 0x80;
 static const uint8_t DFU_COMMAND_READ_BIT = 0x80;
 
 static const uint16_t DFU_TIMEOUT_MS = 1000;
@@ -37,26 +34,6 @@ enum VoiceKitUpdaterStatus : uint8_t {
   UPDATE_IN_PROGRESS,
   UPDATE_REBOOT_PENDING,
   UPDATE_VERIFY_NEW_VERSION,
-};
-
-// Configuration enums from the XMOS firmware's src/configuration/configuration_servicer.h
-enum ConfCommands : uint8_t {
-  CONFIGURATION_SERVICER_RESID_VNR_VALUE = 0x00,
-  CONFIGURATION_SERVICER_RESID_CHANNEL_0_PIPELINE_STAGE = 0x30,
-  CONFIGURATION_SERVICER_RESID_CHANNEL_1_PIPELINE_STAGE = 0x40,
-};
-
-enum PipelineStages : uint8_t {
-  PIPELINE_STAGE_NONE = 0,
-  PIPELINE_STAGE_AEC = 1,
-  PIPELINE_STAGE_IC = 2,
-  PIPELINE_STAGE_NS = 3,
-  PIPELINE_STAGE_AGC = 4,
-};
-
-enum MicrophoneChannels : uint8_t {
-  MICROPHONE_CHANNEL_0 = 0,
-  MICROPHONE_CHANNEL_1 = 1,
 };
 
 // DFU enums from https://github.com/xmos/sln_voice/blob/develop/examples/ffva/src/dfu_int/dfu_state_machine.h
@@ -149,14 +126,6 @@ class VoiceKit : public Component, public i2c::I2CDevice {
 
   void start_dfu_update();
 
-  void set_channel_0_stage(PipelineStages channel_0_stage) { this->channel_0_stage_ = channel_0_stage; }
-  void set_channel_1_stage(PipelineStages channel_1_stage) { this->channel_1_stage_ = channel_1_stage; }
-
-  void write_pipeline_stages();
-  uint8_t read_vnr();
-
-  PipelineStages read_pipeline_stage(MicrophoneChannels channel);
-
  protected:
 #ifdef USE_VOICE_KIT_STATE_CALLBACK
   CallbackManager<void(DFUAutomationState, float, VoiceKitUpdaterStatus)> state_callback_{};
@@ -172,9 +141,6 @@ class VoiceKit : public Component, public i2c::I2CDevice {
   bool dfu_reboot_();
   bool dfu_set_alternate_();
   bool dfu_check_if_ready_();
-
-  PipelineStages channel_0_stage_;
-  PipelineStages channel_1_stage_;
 
   GPIOPin *reset_pin_;
 

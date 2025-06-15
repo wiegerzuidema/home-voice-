@@ -156,30 +156,6 @@ globals:
     restore_value: no
     initial_value: 'false'
 
-###### SELECT ######
-select:
-  - platform: template
-    name: "TTS target media player"
-    id: tts_target_media_player_select
-    options:
-      - "media_player.living_room"
-      - "media_player.kitchen"
-      - "media_player.bedroom"
-    restore_value: true
-    entity_category: config
-    optimistic: true
-    on_value:
-      then:
-        - lambda: |-
-            id(tts_target_media_player) = x;
-        - logger.log:
-            format: "TTS target media player set to: %s"
-            args: [ x.c_str() ]
-            level: DEBUG
-        - globals.set:
-            id: tts_target_media_player
-            value: !lambda return x;
-            
 switch:
   # This is the master mute switch. It is exposed to Home Assistant. The user can only turn it on and off if the hardware switch is off. (The hardware switch overrides the software one)
   - platform: template
@@ -1628,7 +1604,17 @@ micro_wake_word:
 #################################################################   AANGEPAST   ##################################################
 
 
-
+select:
+  - platform: template
+    name: "Wake word sensitivity"
+    optimistic: true
+    initial_option: Moderately sensitive
+    restore_value: true
+    entity_category: config
+    options:
+      - Slightly sensitive
+      - Moderately sensitive
+      - Very sensitive
     on_value:
       # Sets specific wake word probabilities computed for each particular model
       # Note probability cutoffs are set as a quantized uint8 value, each comment has the corresponding floating point cutoff

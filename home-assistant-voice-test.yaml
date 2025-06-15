@@ -1628,17 +1628,7 @@ micro_wake_word:
 #################################################################   AANGEPAST   ##################################################
 
 
-select:
-  - platform: template
-    name: "Wake word sensitivity"
-    optimistic: true
-    initial_option: Moderately sensitive
-    restore_value: true
-    entity_category: config
-    options:
-      - Slightly sensitive
-      - Moderately sensitive
-      - Very sensitive
+
     on_value:
       # Sets specific wake word probabilities computed for each particular model
       # Note probability cutoffs are set as a quantized uint8 value, each comment has the corresponding floating point cutoff

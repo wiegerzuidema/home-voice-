@@ -64,12 +64,29 @@ esp32:
 ###### WIFI ######
 wifi:
   id: wifi_id
-  fast_connect: 'false'
+  fast_connect: false
   on_connect:
-    - lambda: id(improv_ble_in_progress) = false;
-    - script.execute: control_leds
+    then:
+      - lambda: |-
+          id(improv_ble_in_progress) = false;
+      - script.execute:
+          id: control_leds
   on_disconnect:
-    - script.execute: control_leds
+    then:
+      - script.execute:
+          id: control_leds
+  domain: .local
+  reboot_timeout: 15min
+  power_save_mode: LIGHT
+  enable_btm: false
+  enable_rrm: false
+  passive_scan: false
+  enable_on_boot: true
+  networks:
+    - ssid: ${wifi_ssid}
+      password: ${wifi_password}
+      priority: 0.0
+  use_address: ${name}.local
 
 ###### LOGGER ######
 logger:
@@ -174,10 +191,9 @@ select:
     name: "TTS target media player"
     id: tts_target_media_player_select
     options:
-      - "media_player.home_assistant_voice_09d508_media_player"
-      - "media_player.vlc_telnet"
-      - "media_player.woonkamer_2"
-      - "media_player.chromecast8906"
+      - "media_player.living_room"
+      - "media_player.kitchen"
+      - "media_player.bedroom"
     restore_value: true
     entity_category: config
     optimistic: true
@@ -1433,24 +1449,29 @@ i2s_audio:
 external_components:
   - source:
       type: git
-      url: https://github.com/esphome/home-assistant-voice-pe
+      url: https://github.com/wiegerzuidema/home-voice-
       ref: dev
     components:
+      - microphone
+      - nabu_microphone
+      - voice_assistant
       - voice_kit
-    refresh: 0s
 
 ###### MICROPHONE ######
 microphone:
-  - platform: i2s_audio
-    id: i2s_mics
-    i2s_din_pin: GPIO15
-    adc_type: external
-    pdm: false
+  - platform: nabu_microphone
+    i2s_din_pin: 15
     sample_rate: 16000
     bits_per_sample: 32bit
     i2s_mode: secondary
     i2s_audio_id: i2s_input
-    channel: stereo
+    adc_type: external
+    pdm: false
+    channel_0:
+      id: asr_mic
+    channel_1:
+      id: comm_mic
+      amplify_shift: 2
 
 ###### SPEAKER ######
 speaker:

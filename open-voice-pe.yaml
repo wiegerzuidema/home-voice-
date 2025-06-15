@@ -1458,19 +1458,16 @@ external_components:
 
 ###### MICROPHONE ######
 microphone:
-  - platform: nabu_microphone
-    i2s_din_pin: 15
+  - platform: i2s_audio
+    id: i2s_mics
+    i2s_din_pin: GPIO15
+    adc_type: external
+    pdm: false
     sample_rate: 16000
     bits_per_sample: 32bit
     i2s_mode: secondary
     i2s_audio_id: i2s_input
-    adc_type: external
-    pdm: false
-    channel_0:
-      id: asr_mic
-    channel_1:
-      id: comm_mic
-      amplify_shift: 2
+    channel: stereo
 
 ###### SPEAKER ######
 speaker:

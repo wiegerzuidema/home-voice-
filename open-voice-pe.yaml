@@ -1682,8 +1682,7 @@ voice_assistant:
     - script.execute: control_leds
     # Start a script that would potentially enable the stop word if the response is longer than a second
     - script.execute: activate_stop_word_once
-  # When the voice assistant ends ...
-  on_end:
+  # When the voice assistant ends ..
     - logger.log:
         format: "TTS Target Media Player value: %s"
         args: [id(tts_target_media_player).c_str()]

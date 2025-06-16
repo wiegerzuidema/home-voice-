@@ -1621,7 +1621,7 @@ select:
             args: [ x.c_str() ]
             level: DEBUG
         - globals.set:
-            id: tts_target_media_player
+            id: tts_target_media_player_select
             value: !lambda return x;
 
 voice_assistant:

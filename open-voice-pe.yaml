@@ -1744,6 +1744,7 @@ voice_assistant:
               level: DEBUG
     - delay: 1s
   on_end:
+    then:
     - wait_until:
         not:
           voice_assistant.is_running

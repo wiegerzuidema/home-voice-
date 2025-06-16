@@ -1467,8 +1467,8 @@ microphone:
     i2s_audio_id: i2s_input
     adc_type: external
     pdm: false
-    channel_0:
-      id: asr_mic
+    #channel_0:
+      #id: asr_mic
     channel_1:
       id: comm_mic
       amplify_shift: 2

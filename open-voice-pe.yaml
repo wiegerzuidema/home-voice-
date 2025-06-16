@@ -1615,7 +1615,7 @@ select:
     on_value:
       then:
         - lambda: |-
-            id(tts_target_media_player) = x;
+            id(tts_target_media_player_select) = x;
         - logger.log:
             format: "TTS target media player set to: %s"
             args: [ x.c_str() ]

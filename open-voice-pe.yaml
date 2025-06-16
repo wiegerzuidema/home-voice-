@@ -1744,53 +1744,7 @@ voice_assistant:
               level: DEBUG
     - delay: 1s
   on_end:
-    then:
-    - wait_until:
-        not:
-          voice_assistant.is_running
-    - mixer_speaker.apply_ducking:
-        id: media_mixing_input
-        decibel_reduction: 0
-        duration: 1s
-    - script.stop: activate_stop_word_if_tts_step_is_long
-    - if:
-        condition:
-          switch.is_off: timer_ringing
-        then:
-          - switch.turn_off: stop
-    - if:
-        condition:
-          lambda: return id(voice_assistant_phase) == 11;
-        then:
-          - delay: 1s
-    - lambda: id(voice_assistant_phase) = 1; id(assist_just_started) = false;
-    - script.execute: control_leds
-    - if:
-        condition:
-          lambda: return id(voice_assistant_enabled_state);
-        then:
-          - voice_assistant.start:
-              silence_detection: true
-  on_timer_finished:
-    - switch.turn_on: timer_ringing
-  on_timer_started:
-    - script.execute: control_leds
-  on_timer_cancelled:
-    - script.execute: control_leds
-  on_timer_updated:
-    - script.execute: control_leds
-  on_timer_tick:
-    - script.execute: control_leds
-  on_wake_word_detected:
-    - if:
-        condition:
-          switch.is_on: wake_sound
-        then:
-          - script.execute:
-              id: play_sound
-              priority: false
-              sound_file: !lambda return id(wake_word_triggered_sound);
-
+ 
 button:
   - platform: factory_reset
     id: factory_reset_button

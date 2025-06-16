@@ -155,33 +155,6 @@ globals:
     type: bool
     restore_value: no
     initial_value: 'false'
-###### SELECT ######
-select:
-  - platform: template
-    name: "TTS target media player"
-    id: tts_target_media_player_select
-    options:
-      - "media_player.home_assistant_voice_09d508_media_player"
-      - "media_player.vlc_telnet"
-      - "media_player.woonkamer_2"
-      - "media_player.chromecast8906"
-    restore_value: true
-    entity_category: config
-    optimistic: true
-    on_value:
-      then:
-        - lambda: |-
-            id(tts_target_media_player) = x;
-        - logger.log:
-            format: "TTS target media player set to: %s"
-            args: [ x.c_str() ]
-            level: DEBUG
-        - globals.set:
-            id: tts_target_media_player
-            value: !lambda return x;
-
-
-
 
 switch:
   # This is the master mute switch. It is exposed to Home Assistant. The user can only turn it on and off if the hardware switch is off. (The hardware switch overrides the software one)
@@ -265,9 +238,8 @@ switch:
     pin: GPIO47
     id: internal_speaker_amp
     name: "Internal speaker amp"
-    entity_category: config
-    restore_mode: ALWAYS_OFF
-    internal: true
+    entity_category
+    
 
 binary_sensor:
   # Center Button. Used for many things (See on_multi_click)
@@ -705,7 +677,7 @@ light:
               it[9] = muted_color;
               it[10] = Color::BLACK;
             }
-            if ( id(tts_target_media_player_select).volume == 0.0f || id(tts_target_media_player_select).is_muted() ) {
+            if ( id(external_media_player).volume == 0.0f || id(external_media_player).is_muted() ) {
               it[5] = Color::BLACK;
               it[6] = muted_color;
               it[7] = Color::BLACK;
@@ -718,7 +690,7 @@ light:
             Color color(light_color.get_red() * 255, light_color.get_green() * 255,
                   light_color.get_blue() * 255);
             Color silenced_color(255, 0, 0);
-            auto volume_ratio = 12.0f * id(tts_target_media_player_select).volume;
+            auto volume_ratio = 12.0f * id(external_media_player).volume;
             for (int i = 0; i < 12; i++) {
               if (i <= volume_ratio) {
                 it[(6+i)%12] = color * min( 255.0f * (volume_ratio - i) , 255.0f ) ;
@@ -726,7 +698,7 @@ light:
                 it[(6+i)%12] = Color::BLACK;
               }
             }
-            if (id(tts_target_media_player_select).volume == 0.0f) {
+            if (id(external_media_player).volume == 0.0f) {
               it[6] = silenced_color;
             }
       - addressable_lambda:
@@ -1033,7 +1005,7 @@ script:
             id(control_leds_timer_ticking).execute();
           } else if (id(master_mute_switch).state) {
             id(control_leds_muted_or_silent).execute();
-          } else if (id(tts_target_media_player_select).volume == 0.0f || id(tts_target_media_player_select).is_muted()) {
+          } else if (id(external_media_player).volume == 0.0f || id(external_media_player).is_muted()) {
             id(control_leds_muted_or_silent).execute();
           } else if (id(voice_assistant_phase) == ${voice_assist_idle_phase_id}) {
             id(control_leds_voice_assistant_idle_phase).execute();
@@ -1315,24 +1287,24 @@ script:
     then:
       # Turn on the repeat mode and pause for 500 ms between playlist items/repeats
       - lambda: |-
-            id(tts_target_media_player_select)
+            id(external_media_player)
               ->make_call()
               .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_ONE)
               .set_announcement(true)
               .perform();
-            id(tts_target_media_player_select)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 500);
+            id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 500);
 
   # Script execute when the timer is done ringing, to disable repeat mode.
   - id: disable_repeat
     then:
       # Turn off the repeat mode and pause for 0 ms between playlist items/repeats
       - lambda: |-
-            id(tts_target_media_player_select)
+            id(external_media_player)
               ->make_call()
               .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_REPEAT_OFF)
               .set_announcement(true)
               .perform();
-            id(tts_target_media_player_select)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
+            id(external_media_player)->set_playlist_delay_ms(speaker::AudioPipelineType::ANNOUNCEMENT, 0);
 
   # Script executed when we want to play sounds on the device.
   - id: play_sound
@@ -1342,14 +1314,14 @@ script:
     then:
       - lambda: |-
           if (priority) {
-            id(tts_target_media_player_select)
+            id(external_media_player)
               ->make_call()
               .set_command(media_player::MediaPlayerCommand::MEDIA_PLAYER_COMMAND_STOP)
               .set_announcement(true)
               .perform();
           }
-          if ( (id(tts_target_media_player_select).state != media_player::MediaPlayerState::MEDIA_PLAYER_STATE_ANNOUNCING ) || priority) {
-            id(tts_target_media_player_select)
+          if ( (id(external_media_player).state != media_player::MediaPlayerState::MEDIA_PLAYER_STATE_ANNOUNCING ) || priority) {
+            id(external_media_player)
               ->play_file(sound_file, true, false);
           }
 
@@ -1470,7 +1442,7 @@ speaker:
 
 media_player:
   - platform: speaker
-    id: tts_target_media_player_select
+    id: external_media_player
     name: Media Player
     internal: False
     volume_increment: 0.05
@@ -1626,14 +1598,36 @@ micro_wake_word:
                             - voice_assistant.start:
                                 wake_word: !lambda return wake_word;
 
-
-
+###### SELECT ######
+select:
+  - platform: template
+    name: "TTS target media player"
+    id: tts_target_media_player_select
+    options:
+      - "media_player.home_assistant_voice_09d508_media_player"
+      - "media_player.vlc_telnet"
+      - "media_player.woonkamer_2"
+      - "media_player.chromecast8906"
+    restore_value: true
+    entity_category: config
+    optimistic: true
+    on_value:
+      then:
+        - lambda: |-
+            id(tts_target_media_player) = x;
+        - logger.log:
+            format: "TTS target media player set to: %s"
+            args: [ x.c_str() ]
+            level: DEBUG
+        - globals.set:
+            id: tts_target_media_player
+            value: !lambda return x;
 voice_assistant:
   id: va
   microphone:
     microphone: i2s_mics
     channels: 0
-  media_player: 'tts_target_media_player_select'
+  media_player: external_media_player
   micro_wake_word: mww
   use_wake_word: false
   noise_suppression_level: 0
@@ -1649,6 +1643,9 @@ voice_assistant:
     - lambda: id(voice_assistant_phase) = ${voice_assist_not_ready_phase_id};
     - script.execute: control_leds
   on_error:
+
+
+  
     # Only set the error phase if the error code is different than duplicate_wake_up_detected or stt-no-text-recognized
     # These two are ignored for a better user experience
     - if:

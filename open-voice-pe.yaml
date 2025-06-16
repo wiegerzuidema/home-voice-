@@ -1666,27 +1666,25 @@ voice_assistant:
   on_start:
     - mixer_speaker.apply_ducking:
         id: media_mixing_input
-        decibel_reduction: 20
-        duration: 0s
+        decibel_reduction: 20  # Number of dB quieter; higher implies more quiet, 0 implies full volume
+        duration: 0.0s         # The duration of the transition (default is no transition)
   on_listening:
-    - lambda: id(voice_assistant_phase) = 2;
+    - lambda: id(voice_assistant_phase) = ${voice_assist_waiting_for_command_phase_id};
     - script.execute: control_leds
-    - logger.log:
-        format: Streaming audio to Home Assistant
-        level: DEBUG
-        tag: main
   on_stt_vad_start:
-    - lambda: id(voice_assistant_phase) = 3;
+    - lambda: id(voice_assistant_phase) = ${voice_assist_listening_for_command_phase_id};
     - script.execute: control_leds
   on_stt_vad_end:
-    - lambda: id(voice_assistant_phase) = 4;
+    - lambda: id(voice_assistant_phase) = ${voice_assist_thinking_phase_id};
     - script.execute: control_leds
   on_tts_start:
-    - lambda: id(voice_assistant_phase) = 5;
+    - lambda: id(voice_assistant_phase) = ${voice_assist_replying_phase_id};
     - script.execute: control_leds
-    - script.execute: activate_stop_word_if_tts_step_is_long
-  on_tts_end:
-    - logger.log:
+    # Start a script that would potentially enable the stop word if the response is longer than a second
+    - script.execute: activate_stop_word_once
+  # When the voice assistant ends ...
+  on_end:
+- logger.log:
         format: "TTS Target Media Player value: %s"
         args: [id(tts_target_media_player).c_str()]
         level: DEBUG

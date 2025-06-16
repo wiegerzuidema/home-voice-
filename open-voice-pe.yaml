@@ -239,9 +239,7 @@ switch:
     id: internal_speaker_amp
     name: "Internal speaker amp"
     entity_category
-    
-
-binary_sensor:
+    binary_sensor:
   # Center Button. Used for many things (See on_multi_click)
   - platform: gpio
     id: center_button

@@ -1612,17 +1612,7 @@ select:
     restore_value: true
     entity_category: config
     optimistic: true
-    on_value:
-      then:
-        - lambda: |-
-            id(tts_target_media_player_select) = x;
-        - logger.log:
-            format: "TTS target media player set to: %s"
-            args: [ x.c_str() ]
-            level: DEBUG
-        - globals.set:
-            id: tts_target_media_player_select
-            value: !lambda return x;
+
 
 voice_assistant:
   id: va

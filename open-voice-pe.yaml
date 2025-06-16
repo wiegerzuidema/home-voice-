@@ -1666,41 +1666,113 @@ voice_assistant:
   on_start:
     - mixer_speaker.apply_ducking:
         id: media_mixing_input
-        decibel_reduction: 20  # Number of dB quieter; higher implies more quiet, 0 implies full volume
-        duration: 0.0s         # The duration of the transition (default is no transition)
+        decibel_reduction: 20
+        duration: 0s
   on_listening:
-    - lambda: id(voice_assistant_phase) = ${voice_assist_waiting_for_command_phase_id};
+    - lambda: id(voice_assistant_phase) = 2;
     - script.execute: control_leds
+    - logger.log:
+        format: Streaming audio to Home Assistant
+        level: DEBUG
+        tag: main
   on_stt_vad_start:
-    - lambda: id(voice_assistant_phase) = ${voice_assist_listening_for_command_phase_id};
+    - lambda: id(voice_assistant_phase) = 3;
     - script.execute: control_leds
   on_stt_vad_end:
-    - lambda: id(voice_assistant_phase) = ${voice_assist_thinking_phase_id};
+    - lambda: id(voice_assistant_phase) = 4;
     - script.execute: control_leds
   on_tts_start:
-    - lambda: id(voice_assistant_phase) = ${voice_assist_replying_phase_id};
+    - lambda: id(voice_assistant_phase) = 5;
     - script.execute: control_leds
-    # Start a script that would potentially enable the stop word if the response is longer than a second
-    - script.execute: activate_stop_word_once
-  # When the voice assistant ends ...
+    - script.execute: activate_stop_word_if_tts_step_is_long
+  on_tts_end:
+    - logger.log:
+        format: "TTS Target Media Player value: %s"
+        args: [id(tts_target_media_player).c_str()]
+        level: DEBUG
+    - logger.log:
+        format: "Condition result for remote playback: %d"
+        args: [id(tts_target_media_player) != "media_player.none"]
+        level: DEBUG
+    - media_player.stop:
+        id: external_media_player
+        announcement: true
+    - if:
+        condition:
+          lambda: return id(tts_target_media_player) != "media_player.none";
+        then:
+          - logger.log:
+              format: "Routing TTS to remote media player: %s"
+              args: [id(tts_target_media_player).c_str()]
+              level: DEBUG
+          - homeassistant.service:
+              service: media_player.play_media
+              data:
+                entity_id: !lambda return id(tts_target_media_player);
+                media_content_id: !lambda return x;
+                media_content_type: music
+                announce: "true"
+          - logger.log:
+              format: "Sent TTS to remote media player with URL"
+              level: DEBUG
+          - delay: 10s
+          - logger.log:
+              format: "Checking external playback success for %s"
+              args: [id(tts_target_media_player).c_str()]
+              level: DEBUG
+          - if:
+              condition:
+                lambda: return false;  # Placeholder
+              then:
+                - logger.log:
+                    format: "External playback failed for %s"
+                    args: [id(tts_target_media_player).c_str()]
+                    level: ERROR
+          - voice_assistant.stop
+          - delay: 1s
+          - lambda: id(voice_assistant_phase) = 1; id(assist_just_started) = false;
+        else:
+          - logger.log:
+              format: "Playing TTS locally on VPE"
+              level: DEBUG
+          - homeassistant.service:
+              service: media_player.play_media
+              data:
+                entity_id: "media_player.external_media_player"
+                media_content_id: !lambda return x;
+                media_content_type: music
+                announce: "true"
+          - logger.log:
+              format: "Sent TTS to local media player"
+              level: DEBUG
+    - delay: 1s
   on_end:
     - wait_until:
         not:
-          voice_assistant.is_running:
-    # Stop ducking audio.
+          voice_assistant.is_running
     - mixer_speaker.apply_ducking:
         id: media_mixing_input
         decibel_reduction: 0
-        duration: 1.0s
-    # If the end happened because of an error, let the error phase on for a second
+        duration: 1s
+    - script.stop: activate_stop_word_if_tts_step_is_long
     - if:
         condition:
-          lambda: return id(voice_assistant_phase) == ${voice_assist_error_phase_id};
+          switch.is_off: timer_ringing
+        then:
+          - switch.turn_off: stop
+    - if:
+        condition:
+          lambda: return id(voice_assistant_phase) == 11;
         then:
           - delay: 1s
-    # Reset the voice assistant phase id and reset the LED animations.
-    - lambda: id(voice_assistant_phase) = ${voice_assist_idle_phase_id};
+    - lambda: id(voice_assistant_phase) = 1; id(assist_just_started) = false;
     - script.execute: control_leds
+    - if:
+        condition:
+          lambda: return id(voice_assistant_enabled_state);
+        then:
+          - voice_assistant.start:
+              silence_detection: true
   on_timer_finished:
     - switch.turn_on: timer_ringing
   on_timer_started:
@@ -1711,6 +1783,15 @@ voice_assistant:
     - script.execute: control_leds
   on_timer_tick:
     - script.execute: control_leds
+  on_wake_word_detected:
+    - if:
+        condition:
+          switch.is_on: wake_sound
+        then:
+          - script.execute:
+              id: play_sound
+              priority: false
+              sound_file: !lambda return id(wake_word_triggered_sound);
 
 button:
   - platform: factory_reset

@@ -1684,7 +1684,7 @@ voice_assistant:
     - script.execute: activate_stop_word_once
   # When the voice assistant ends ...
   on_end:
-- logger.log:
+    - logger.log:
         format: "TTS Target Media Player value: %s"
         args: [id(tts_target_media_player).c_str()]
         level: DEBUG

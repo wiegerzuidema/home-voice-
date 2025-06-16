@@ -102,59 +102,56 @@ psram:
   speed: 80MHz
 
 globals:
-  # Global index for our LEDs. So that switching between different animation does not lead to unwanted effects.
+globals:
   - id: global_led_animation_index
     type: int
-    restore_value: no
     initial_value: '0'
-  # Global initialization variable. Initialized to true and set to false once everything is connected. Only used to have a smooth "plugging" experience
   - id: init_in_progress
     type: bool
-    restore_value: no
     initial_value: 'true'
-  # Global variable storing the state of ImprovBLE. Used to draw different LED animations
   - id: improv_ble_in_progress
     type: bool
-    restore_value: no
     initial_value: 'false'
-  # Global variable tracking the phase of the voice assistant (defined above). Initialized to not_ready
   - id: voice_assistant_phase
     type: int
-    restore_value: no
-    initial_value: ${voice_assist_not_ready_phase_id}
-  # Global variable tracking if the dial was recently touched.
+    initial_value: '10'
   - id: dial_touched
     type: bool
-    restore_value: no
     initial_value: 'false'
-  # Global variable tracking if the LED color was recently changed.
   - id: color_changed
     type: bool
-    restore_value: no
     initial_value: 'false'
-  # Global variable tracking if the jack has been plugged touched.
   - id: jack_plugged_recently
     type: bool
-    restore_value: no
     initial_value: 'false'
-  # Global variable tracking if the jack has been unplugged touched.
   - id: jack_unplugged_recently
     type: bool
-    restore_value: no
     initial_value: 'false'
-  # Global variable storing the first active timer
   - id: first_active_timer
     type: voice_assistant::Timer
-    restore_value: false
-  # Global variable storing if a timer is active
   - id: is_timer_active
     type: bool
-    restore_value: false
-  # Global variable storing if a factory reset was requested. If it is set to true, the device will factory reset once the center button is released
   - id: factory_reset_requested
     type: bool
-    restore_value: no
     initial_value: 'false'
+  - id: stop_enabled
+    type: bool
+    initial_value: 'false'
+  - id: wake_word_engine
+    type: std::string
+    restore_value: true
+    initial_value: '"openWakeWord"'
+  - id: assist_just_started
+    type: bool
+    initial_value: 'false'
+  - id: tts_target_media_player
+    type: std::string
+    restore_value: true
+    initial_value: '"media_player.none"'
+  - id: voice_assistant_enabled_state
+    type: bool
+    restore_value: true
+    initial_value: 'true'
 
 switch:
   # This is the master mute switch. It is exposed to Home Assistant. The user can only turn it on and off if the hardware switch is off. (The hardware switch overrides the software one)
@@ -1602,7 +1599,7 @@ micro_wake_word:
 ###### SELECT ######
 select:
   - platform: template
-    name: "tts target media player"
+    name: "TTS target media player"
     id: tts_target_media_player_select
     options:
       - "media_player.home_assistant_voice_09d508_media_player"
@@ -1612,6 +1609,17 @@ select:
     restore_value: true
     entity_category: config
     optimistic: true
+    on_value:
+      then:
+        - lambda: |-
+            id(tts_target_media_player) = x;
+        - logger.log:
+            format: "TTS target media player set to: %s"
+            args: [ x.c_str() ]
+            level: DEBUG
+        - globals.set:
+            id: tts_target_media_player
+            value: !lambda return x;
 
 
 voice_assistant:

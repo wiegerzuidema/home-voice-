@@ -1602,7 +1602,7 @@ micro_wake_word:
 ###### SELECT ######
 select:
   - platform: template
-    name: "TTS target media player"
+    name: "tts target media player"
     id: tts_target_media_player_select
     options:
       - "media_player.home_assistant_voice_09d508_media_player"

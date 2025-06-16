@@ -238,8 +238,11 @@ switch:
     pin: GPIO47
     id: internal_speaker_amp
     name: "Internal speaker amp"
-    entity_category
-    binary_sensor:
+    entity_category: config
+    restore_mode: ALWAYS_OFF
+    internal: true
+
+binary_sensor:
   # Center Button. Used for many things (See on_multi_click)
   - platform: gpio
     id: center_button
@@ -1620,6 +1623,7 @@ select:
         - globals.set:
             id: tts_target_media_player
             value: !lambda return x;
+
 voice_assistant:
   id: va
   microphone:
@@ -1641,9 +1645,6 @@ voice_assistant:
     - lambda: id(voice_assistant_phase) = ${voice_assist_not_ready_phase_id};
     - script.execute: control_leds
   on_error:
-
-
-  
     # Only set the error phase if the error code is different than duplicate_wake_up_detected or stt-no-text-recognized
     # These two are ignored for a better user experience
     - if:

@@ -10,8 +10,8 @@ substitutions:
 
 ###### ESPHOME ######
 esphome:
-  name: ${name}
-  friendly_name: ${friendly_name}
+  name: {name}
+  friendly_name: {friendly_name}
   min_version: 2025.2.0
   on_boot:
     priority: 375.0
